@@ -125,6 +125,9 @@ void AppClass::Display(void)
 	GLuint SolidColor = glGetUniformLocation(m_uShaderProgramID, "SolidColor");
 	glUniform3f(SolidColor, m_v3Color.r, m_v3Color.g, m_v3Color.b);
 
+	GLuint M4ToWorld = glGetUniformLocation(m_uShaderProgramID, "M4ToWorld");
+	glUniformMatrix4fv(M4ToWorld, 1, GL_FALSE, glm::value_ptr(m_m4ToWorld));
+
 	//draw content
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 
