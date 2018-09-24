@@ -17,7 +17,6 @@ void MyMesh::GenerateCircle(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 		then call the AddTri function to generate a_nSubdivision number of faces
 	*/
 	//a_nSubdivisions = 10;
-	int next = 0;
 	/*float scale = 5;
 	std::cout << a_fRadius << "\n";
 	float myFloat;
@@ -30,12 +29,13 @@ void MyMesh::GenerateCircle(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	myFloat = (float)(scale * sinf(((1.0f / (float)a_nSubdivisions) / (float)2 * (float)PI)));
 	std::cout << myFloat << "\n";
 	std::cout << a_nSubdivisions << "\n";*/
-	//a_nSubdivisions = 10;
 	//a_nSubdivisions = 4;
 	/*AddTri(vector3(0, 0, 0), vector3(1, 0, 0), vector3(0, 1, 0));
 	AddTri(vector3(0, 0, 0), vector3(0, 1, 0), vector3(-1, 0, 0));
 	AddTri(vector3(0, 0, 0), vector3(-1, 0, 0), vector3(0, -1, 0));
 	AddTri(vector3(0, 0, 0), vector3(0, -1, 0), vector3(1, 0, 0));*/
+	a_nSubdivisions = 3;
+	int next = 0;
 	for (int i = 0; i < a_nSubdivisions; i++)
 	{
 		next = i + 1;
