@@ -16,33 +16,15 @@ void MyMesh::GenerateCircle(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 		Calculate a_nSubdivisions number of points around a center point in a radial manner
 		then call the AddTri function to generate a_nSubdivision number of faces
 	*/
-	//a_nSubdivisions = 10;
-	/*float scale = 5;
-	std::cout << a_fRadius << "\n";
-	float myFloat;
-	myFloat = (float)(scale * cosf(((0.0f / (float)a_nSubdivisions) / (float)2 * (float)PI)));
-	std::cout << myFloat << "\n";
-	myFloat = (float)(scale * sinf(((0.0f / (float)a_nSubdivisions) / (float)2 * (float)PI)));
-	std::cout << myFloat << "\n";
-	myFloat = (float)(scale * cosf(((1.0f / (float)a_nSubdivisions) / (float)2 * (float)PI)));
-	std::cout << myFloat << "\n";
-	myFloat = (float)(scale * sinf(((1.0f / (float)a_nSubdivisions) / (float)2 * (float)PI)));
-	std::cout << myFloat << "\n";
-	std::cout << a_nSubdivisions << "\n";*/
-	//a_nSubdivisions = 4;
-	/*AddTri(vector3(0, 0, 0), vector3(1, 0, 0), vector3(0, 1, 0));
-	AddTri(vector3(0, 0, 0), vector3(0, 1, 0), vector3(-1, 0, 0));
-	AddTri(vector3(0, 0, 0), vector3(-1, 0, 0), vector3(0, -1, 0));
-	AddTri(vector3(0, 0, 0), vector3(0, -1, 0), vector3(1, 0, 0));*/
-	a_nSubdivisions = 3;
 	int next = 0;
 	for (int i = 0; i < a_nSubdivisions; i++)
 	{
+		
 		next = i + 1;
-		float firstX = (float)(a_fRadius * cosf((((float)i / (float)a_nSubdivisions) / 2.0f * (float)PI)));
-		float firstY = (float)(a_fRadius * sinf((((float)i / (float)a_nSubdivisions) / 2.0f * (float)PI)));
-		float nextX = (float)(a_fRadius * cosf((((float)next / (float)a_nSubdivisions) / 2.0f * (float)PI)));
-		float nextY = (float)(a_fRadius * sinf((((float)next / (float)a_nSubdivisions) / 2.0f * (float)PI)));
+		float firstX = (float)(a_fRadius * std::cosf((((float)i / (float)a_nSubdivisions) * 2.0f * (float)PI)));
+		float firstY = (float)(a_fRadius * std::sinf((((float)i / (float)a_nSubdivisions) * 2.0f * (float)PI)));
+		float nextX = (float)(a_fRadius * std::cosf((((float)next / (float)a_nSubdivisions) * 2.0f * (float)PI)));
+		float nextY = (float)(a_fRadius * std::sinf((((float)next / (float)a_nSubdivisions) * 2.0f * (float)PI)));
 		AddTri(
 			vector3(0, 0, 0),
 			vector3(firstX, firstY, 0),
