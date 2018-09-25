@@ -109,6 +109,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "E03_Shaders", "E03_Shaders\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "C09_MeshClassStart", "C09_MeshClassStart\C09_MeshClassStart.vcxproj", "{7961B05C-2049-4F38-8E3C-506937B5EE79}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "E05 - Transformations", "E05 - Transformations\E05 - Transformations.vcxproj", "{2AB8A7C7-16B1-48C2-B566-377721B01E05}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -289,6 +291,10 @@ Global
 		{7961B05C-2049-4F38-8E3C-506937B5EE79}.Debug|x86.Build.0 = Debug|Win32
 		{7961B05C-2049-4F38-8E3C-506937B5EE79}.Release|x86.ActiveCfg = Release|Win32
 		{7961B05C-2049-4F38-8E3C-506937B5EE79}.Release|x86.Build.0 = Release|Win32
+		{2AB8A7C7-16B1-48C2-B566-377721B01E05}.Debug|x86.ActiveCfg = Debug|Win32
+		{2AB8A7C7-16B1-48C2-B566-377721B01E05}.Debug|x86.Build.0 = Debug|Win32
+		{2AB8A7C7-16B1-48C2-B566-377721B01E05}.Release|x86.ActiveCfg = Release|Win32
+		{2AB8A7C7-16B1-48C2-B566-377721B01E05}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -337,6 +343,7 @@ Global
 		{870B329D-6DED-48D2-8E86-0893E3BB8DAB} = {78C06654-E155-40A8-97F7-7BA1E50977C5}
 		{8A095650-0CB5-45AD-868C-A471C7C64DE8} = {75A6D539-8458-45DF-BE47-1376FB54C16E}
 		{7961B05C-2049-4F38-8E3C-506937B5EE79} = {A586CAA1-C864-488E-8301-D374FFD607C9}
+		{2AB8A7C7-16B1-48C2-B566-377721B01E05} = {69E172C4-C41E-49E1-80A7-9F011CA76C8B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A36545A6-DAAA-4856-BDB7-57C29F88BC6B}
