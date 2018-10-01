@@ -53,13 +53,47 @@ void Application::Display(void)
 
 	//calculate the current position
 	vector3 v3CurrentPos;
-	
-
-
+	static int position = 0;
+	static bool started = false;
+	float interval = 2.0f;
+	float diff;
+	static float lastDiff;
+	int nextPosition = 1;
 
 
 	//your code goes here
-	v3CurrentPos = vector3(0.0f, 0.0f, 0.0f);
+	if (!started)
+	{
+		v3CurrentPos = m_stopsList[0];
+		started = true;
+	}
+	else
+	{
+		nextPosition = position + 1;
+		if (nextPosition > 10)
+		{
+			nextPosition = 0;
+		}
+		diff = fmodf(fTimer, interval) / interval;
+		if (diff < lastDiff)
+		{
+			lastDiff = diff;
+			diff = 1;
+		}
+		v3CurrentPos = (diff * (m_stopsList[nextPosition] - m_stopsList[position])) + m_stopsList[position];
+		if (diff == 1)
+		{
+			position++;
+			if (position > 10)
+			{
+				position = 0;
+			}
+		}
+		else
+		{
+			lastDiff = diff;
+		}
+	}
 	//-------------------
 	
 
