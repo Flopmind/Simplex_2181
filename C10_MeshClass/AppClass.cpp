@@ -1,15 +1,14 @@
 #include "AppClass.h"
 void Application::InitVariables(void)
 {
+	m_pCameraMngr->SetPositionTargetAndUpward(AXIS_Z * 20, ZERO_V3, AXIS_Y);
 	//Make MyMesh object
-	//m_pMesh = new MyMesh();
-	//m_pMesh->GenerateCube(2.0f, C_BROWN);
+	m_pMesh = new MyMesh();
+	m_pMesh->GenerateCube(1.0f, C_RED);
 
-	////Make MyMesh object
-	//m_pMesh1 = new MyMesh();
-	//m_pMesh1->GenerateCube(1.0f, C_WHITE);
-
-	MakeInvader(m_pMesh1);
+	//Make MyMesh object
+	m_pMesh1 = new MyMesh();
+	m_pMesh1->GenerateCube(1.0f, C_WHITE);
 }
 void Application::Update(void)
 {
@@ -26,24 +25,55 @@ void Application::Display(void)
 {
 	// Clear the screen
 	ClearScreen();
+	static DWORD DStartingTime = GetTickCount();
+	DWORD DCurrentTime = GetTickCount();
+	DWORD DDelta = DCurrentTime - DStartingTime;
+	float fTimer = static_cast<float>(DDelta / 1000.0f);
+	std::cout << fTimer <<std::endl;
 
-	m_pMesh->Render(m_pCameraMngr->GetProjectionMatrix(), m_pCameraMngr->GetViewMatrix(), ToMatrix4(m_qArcBall));
-	m_pMesh1->Render(m_pCameraMngr->GetProjectionMatrix(), m_pCameraMngr->GetViewMatrix(), glm::translate(vector3(3.0f, 0.0f, 0.0f)));
+	float fTotalTime = 5.5f;
 
-	myMeshs[0]->Render(m_pCameraMngr->GetProjectionMatrix(), m_pCameraMngr->GetViewMatrix(), glm::translate(vector3(-3.0f, 4.0f, 0.0f)));
+	float fPercent = MapValue(fTimer, 0.0f, fTotalTime, 0.0f, 1.0f);
 
+	static vector3 v3InitialPoint(0.0f, 0.0f, 0.0f);
+	static vector3 v3EndPoint(5.0f, 0.0f, 0.0f);
+
+	static float fStart = 0.0f;
+	static float fEnd = 180.0f;
+
+	float fCurrent = glm::lerp(fStart, fEnd, fPercent);
+	vector3 v3Position = glm::lerp(v3InitialPoint, v3EndPoint, fPercent);
+
+	matrix4 m4Rotation = glm::rotate(IDENTITY_M4, glm::radians(fCurrent), AXIS_Z);
+	matrix4 m4Position = glm::translate(m4Rotation, v3EndPoint);
+	
+	m4Position = glm::translate(vector3(0.0f));
+
+	m_pMesh->Render(m_pCameraMngr->GetProjectionMatrix(), m_pCameraMngr->GetViewMatrix(), m4Position);
+
+	if (fPercent >= 1.0f)
+	{
+		DStartingTime = GetTickCount();
+		//std::swap(v3InitialPoint, v3EndPoint);
+		std::swap(fStart, fEnd);
+		//fPercent = 0.00f;
+	}
+	fPercent += 0.01f;
+
+	//m_pMesh1->Render(m_pCameraMngr->GetProjectionMatrix(), m_pCameraMngr->GetViewMatrix(), glm::translate(vector3( 3.0f, 0.0f, 0.0f)));
+		
 	// draw a skybox
 	m_pMeshMngr->AddSkyboxToRenderList();
-
+	
 	//render list call
 	m_uRenderCallCount = m_pMeshMngr->Render();
 
 	//clear the render list
 	m_pMeshMngr->ClearRenderList();
-
+	
 	//draw gui
 	DrawGUI();
-
+	
 	//end the current frame (internally swaps the front and back buffers)
 	m_pWindow->display();
 }
@@ -57,59 +87,4 @@ void Application::Release(void)
 	SafeDelete(m_pMesh1);
 	//release GUI
 	ShutdownGUI();
-}
-
-void Application::MakeInvader(MyMesh* mesh)
-{
-	for (int i = 0; i < 100; i++)
-	{
-		myMeshs[i] = new MyMesh();
-		myMeshs[i]->GenerateCube(1.0f, C_BLACK);
-	}
-	/* mesh->GenerateCuboid(vector3(-3.0f, 4.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(3.0f, 4.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(-2.0f, 3.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(2.0f, 3.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(-3.0f, 2.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(-2.0f, 2.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(-1.0f, 2.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(0.0f, 2.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(1.0f, 2.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(2.0f, 2.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(3.0f, 2.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(-4.0f, 1.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(-3.0f, 1.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(-1.0f, 1.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(0.0f, 1.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(1.0f, 1.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(3.0f, 1.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(4.0f, 1.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(-5.0f, 0.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(-4.0f, 0.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(-3.0f, 0.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(-2.0f, 0.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(-1.0f, 0.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(0.0f, 0.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(1.0f, 0.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(2.0f, 0.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(3.0f, 0.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(4.0f, 0.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(5.0f, 0.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(-5.0f, -1.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(-3.0f, -1.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(-2.0f, -1.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(-1.0f, -1.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(0.0f, -1.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(1.0f, -1.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(2.0f, -1.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(3.0f, -1.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(5.0f, -1.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(-5.0f, -2.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(-3.0f, -2.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(3.0f, -2.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(5.0f, -2.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(-2.0f, -3.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(-1.0f, -3.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(1.0f, -3.0f, 0.0f));
-	mesh->GenerateCuboid(vector3(2.0f, -3.0f, 0.0f));*/
 }
