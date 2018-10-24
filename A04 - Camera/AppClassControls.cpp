@@ -368,12 +368,11 @@ void Application::CameraRotation(float a_fSpeed)
 		fDeltaMouse = static_cast<float>(MouseY - CenterY);
 		fAngleX += fDeltaMouse * a_fSpeed;
 	}
+	vector3 left = m_pCamera->GetSideways();
+
 	//Change the Yaw and the Pitch of the camera
-	//glm::angleAxis(fAngleX, AXIS_X);
-	//glm::angleAxis(fAngleY, AXIS_Y);
 	m_pCamera->SetTarget((glm::angleAxis(-fAngleY, AXIS_Y) * glm::angleAxis(fAngleX, AXIS_X) * (m_pCamera->GetTarget() - m_pCamera->GetPosition())) + m_pCamera->GetPosition());
-	//m_pCamera->SetAbove(glm::angleAxis(fAngleX, AXIS_X) * (glm::angleAxis(-fAngleY, AXIS_Y) * (m_pCamera->GetAbove() - m_pCamera->GetPosition())) + m_pCamera->GetPosition());
-	//m_pCamera->SetAbove(glm::angleAxis(90.0f, AXIS_XZ) * (m_pCamera->GetTarget() - m_pCamera->GetPosition()));
+	m_pCamera->SetAbove((-1.0f * glm::cross(m_pCamera->GetForward(), left)) + m_pCamera->GetPosition());
 	SetCursorPos(CenterX, CenterY);//Position the mouse in the center
 }
 //Keyboard
