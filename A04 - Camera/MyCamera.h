@@ -213,6 +213,24 @@ public:
 	void CalculateProjectionMatrix(void);
 
 	/*
+	USAGE: Return the current forward vector of the camera
+	ARGUMENTS: ---
+	OUTPUT: The current forward vector of the camera
+	*/
+	vector3 GetForward(void);
+	/*
+	USAGE: Return the current upward vector of the camera
+	ARGUMENTS: ---
+	OUTPUT: The current upward vector of the camera
+	*/
+	vector3 GetUpward(void);
+	/*
+	USAGE: Return the current sideways vector of the camera
+	ARGUMENTS: ---
+	OUTPUT: The current sideways vector of the camera
+	*/
+	vector3 GetSideways(void);
+	/*
 	USAGE: Translates the camera forward or backward
 	ARGUMENTS: float a_fDistance = 0.1f -> amount of movement
 	OUTPUT: ---

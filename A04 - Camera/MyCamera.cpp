@@ -150,13 +150,44 @@ void Simplex::MyCamera::CalculateProjectionMatrix(void)
 	}
 }
 
-void MyCamera::MoveForward(float a_fDistance)
+vector3 MyCamera::GetForward()
 {
-	//The following is just an example and does not take in account the forward vector (AKA view vector)
-	m_v3Position += vector3(0.0f, 0.0f,-a_fDistance);
-	m_v3Target += vector3(0.0f, 0.0f, -a_fDistance);
-	m_v3Above += vector3(0.0f, 0.0f, -a_fDistance);
+	return m_v3Target - m_v3Position;
 }
 
-void MyCamera::MoveVertical(float a_fDistance){}//Needs to be defined
-void MyCamera::MoveSideways(float a_fDistance){}//Needs to be defined
+vector3 MyCamera::GetUpward()
+{
+	return m_v3Above - m_v3Position;
+}
+
+vector3 MyCamera::GetSideways()
+{
+	return glm::cross(GetForward(), GetUpward());
+}
+
+void MyCamera::MoveForward(float a_fDistance)
+{
+	vector3 forward = GetForward();
+
+	m_v3Position += forward * (a_fDistance);
+	m_v3Target += forward * (a_fDistance);
+	m_v3Above += forward * (a_fDistance);
+}
+
+void MyCamera::MoveVertical(float a_fDistance)
+{
+	vector3 upward = GetUpward();
+
+	m_v3Position += upward * (-a_fDistance);
+	m_v3Target += upward * (-a_fDistance);
+	m_v3Above += upward * (-a_fDistance);
+}
+
+void MyCamera::MoveSideways(float a_fDistance)
+{
+	vector3 sideways = GetSideways();
+
+	m_v3Position += sideways * (-a_fDistance);
+	m_v3Target += sideways * (-a_fDistance);
+	m_v3Above += sideways * (-a_fDistance);
+}
