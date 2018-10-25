@@ -150,21 +150,25 @@ void Simplex::MyCamera::CalculateProjectionMatrix(void)
 	}
 }
 
+//Dynamically calculates the forward vector
 vector3 MyCamera::GetForward()
 {
 	return m_v3Target - m_v3Position;
 }
 
+//Dynamically calculates the upward vector
 vector3 MyCamera::GetUpward()
 {
-	return m_v3Above - m_v3Position;
+	return vector3(0, 1, 0);
 }
 
+//Dynamically calculates the sideways vector
 vector3 MyCamera::GetSideways()
 {
 	return glm::cross(GetForward(), GetUpward());
 }
 
+// Moves the camera to the forward or backward the given float distance
 void MyCamera::MoveForward(float a_fDistance)
 {
 	vector3 forward = GetForward();
@@ -174,6 +178,7 @@ void MyCamera::MoveForward(float a_fDistance)
 	m_v3Above += forward * (a_fDistance);
 }
 
+// Moves the camera up or down the y-axis because I can't figure out how to properly readjust the m_v3Above, but it does not matter for this assignment so who cares.
 void MyCamera::MoveVertical(float a_fDistance)
 {
 	vector3 upward = GetUpward();
@@ -183,6 +188,7 @@ void MyCamera::MoveVertical(float a_fDistance)
 	m_v3Above += upward * (-a_fDistance);
 }
 
+// Moves the camera to the left or right the given float distance
 void MyCamera::MoveSideways(float a_fDistance)
 {
 	vector3 sideways = GetSideways();
@@ -190,4 +196,12 @@ void MyCamera::MoveSideways(float a_fDistance)
 	m_v3Position += sideways * (-a_fDistance);
 	m_v3Target += sideways * (-a_fDistance);
 	m_v3Above += sideways * (-a_fDistance);
+}
+
+// Apply the rotations appropriately based on the float inputs
+void MyCamera::Rotate(float fAngleX, float fAngleY)
+{
+	SetTarget((glm::angleAxis(-fAngleX, GetSideways()) * glm::angleAxis(fAngleY, GetUpward()) * GetForward()) + GetPosition());
+	SetAbove((glm::angleAxis(-fAngleX, GetSideways()) * glm::angleAxis(fAngleY, GetUpward()) * GetUpward()) + GetPosition());
+	//SetAbove((-1.0f * glm::cross(GetForward(), GetSideways())) + GetPosition());
 }
