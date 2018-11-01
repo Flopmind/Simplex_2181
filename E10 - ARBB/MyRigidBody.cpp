@@ -96,42 +96,47 @@ void MyRigidBody::SetModelMatrix(matrix4 a_m4ModelMatrix)
 	myPoints.push_back(vector3(m_v3MaxL.x, m_v3MinL.y, m_v3MaxL.z));
 	myPoints.push_back(vector3(m_v3MaxL.x, m_v3MaxL.y, m_v3MinL.z));
 	myPoints.push_back(vector3(m_v3MaxL.x, m_v3MaxL.y, m_v3MaxL.z));
-
+	std::vector<vector4> nextPoints;
 	for (vector3 point : myPoints)
 	{
-		point = myRot * point;
+		nextPoints.push_back(myRot * vector4(point, 1.0f));
+		//matrix4 myRot2 = (m_m4ToWorld * ToMatrix4(point));
+		//point = vector3(myRot2[0], myRot2[5], myRot[10]);
 	}
 
-	m_v3MinG = vector3(myPoints[0].x, myPoints[0].y, myPoints[0].z);
-	m_v3MaxG = vector3(myPoints[0].x, myPoints[0].y, myPoints[0].z);
+	m_v3MinG = vector3(nextPoints[0].x, nextPoints[0].y, nextPoints[0].z);
+	m_v3MaxG = vector3(nextPoints[0].x, nextPoints[0].y, nextPoints[0].z);
 	
-	for (uint i = 1; i < myPoints.size(); ++i)
+	for (uint i = 1; i < nextPoints.size(); ++i)
 	{
-		if (m_v3MinG.x > myPoints[i].x)
+		if (m_v3MinG.x > nextPoints[i].x)
 		{
-			m_v3MinG.x = myPoints[i].x;
+			m_v3MinG.x = nextPoints[i].x;
 		}
-		else if (m_v3MaxG.x < myPoints[i].x)
+		else if (m_v3MaxG.x < nextPoints[i].x)
 		{
-			m_v3MaxG.x = myPoints[i].x;
+			m_v3MaxG.x = nextPoints[i].x;
 		}
-		if (m_v3MinG.y > myPoints[i].y)
+		if (m_v3MinG.y > nextPoints[i].y)
 		{
-			m_v3MinG.y = myPoints[i].y;
+			m_v3MinG.y = nextPoints[i].y;
 		}
-		else if (m_v3MaxG.y < myPoints[i].y)
+		else if (m_v3MaxG.y < nextPoints[i].y)
 		{
-			m_v3MaxG.y = myPoints[i].y;
+			m_v3MaxG.y = nextPoints[i].y;
 		}
-		if (m_v3MinG.z > myPoints[i].z)
+		if (m_v3MinG.z > nextPoints[i].z)
 		{
-			m_v3MinG.z = myPoints[i].z;
+			m_v3MinG.z = nextPoints[i].z;
 		}
-		else if (m_v3MaxG.z < myPoints[i].z)
+		else if (m_v3MaxG.z < nextPoints[i].z)
 		{
-			m_v3MaxG.z = myPoints[i].z;
+			m_v3MaxG.z = nextPoints[i].z;
 		}
 	}
+
+	m_v3MinG += GetCenterGlobal();
+	m_v3MaxG += GetCenterGlobal();
 
 	//----------------------------------------
 
