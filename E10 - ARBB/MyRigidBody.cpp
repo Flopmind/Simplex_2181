@@ -76,6 +76,7 @@ vector3 MyRigidBody::GetMinGlobal(void) { return m_v3MinG; }
 vector3 MyRigidBody::GetMaxGlobal(void) { return m_v3MaxG; }
 vector3 MyRigidBody::GetHalfWidth(void) { return m_v3HalfWidth; }
 matrix4 MyRigidBody::GetModelMatrix(void) { return m_m4ToWorld; }
+
 void MyRigidBody::SetModelMatrix(matrix4 a_m4ModelMatrix)
 {
 	//to save some calculations if the model matrix is the same there is nothing to do here
@@ -85,8 +86,53 @@ void MyRigidBody::SetModelMatrix(matrix4 a_m4ModelMatrix)
 	m_m4ToWorld = a_m4ModelMatrix;
 	
 	//your code goes here---------------------
-	m_v3MinG = m_v3MinL;
-	m_v3MaxG = m_v3MaxL;
+	glm::quat myRot = glm::quat_cast(m_m4ToWorld);
+	std::vector<vector3> myPoints;
+	myPoints.push_back(vector3(m_v3MinL.x, m_v3MinL.y, m_v3MinL.z));
+	myPoints.push_back(vector3(m_v3MinL.x, m_v3MinL.y, m_v3MaxL.z));
+	myPoints.push_back(vector3(m_v3MinL.x, m_v3MaxL.y, m_v3MinL.z));
+	myPoints.push_back(vector3(m_v3MinL.x, m_v3MaxL.y, m_v3MaxL.z));
+	myPoints.push_back(vector3(m_v3MaxL.x, m_v3MinL.y, m_v3MinL.z));
+	myPoints.push_back(vector3(m_v3MaxL.x, m_v3MinL.y, m_v3MaxL.z));
+	myPoints.push_back(vector3(m_v3MaxL.x, m_v3MaxL.y, m_v3MinL.z));
+	myPoints.push_back(vector3(m_v3MaxL.x, m_v3MaxL.y, m_v3MaxL.z));
+
+	for (vector3 point : myPoints)
+	{
+		point = myRot * point;
+	}
+
+	m_v3MinG = vector3(myPoints[0].x, myPoints[0].y, myPoints[0].z);
+	m_v3MaxG = vector3(myPoints[0].x, myPoints[0].y, myPoints[0].z);
+	
+	for (uint i = 1; i < myPoints.size(); ++i)
+	{
+		if (m_v3MinG.x > myPoints[i].x)
+		{
+			m_v3MinG.x = myPoints[i].x;
+		}
+		else if (m_v3MaxG.x < myPoints[i].x)
+		{
+			m_v3MaxG.x = myPoints[i].x;
+		}
+		if (m_v3MinG.y > myPoints[i].y)
+		{
+			m_v3MinG.y = myPoints[i].y;
+		}
+		else if (m_v3MaxG.y < myPoints[i].y)
+		{
+			m_v3MaxG.y = myPoints[i].y;
+		}
+		if (m_v3MinG.z > myPoints[i].z)
+		{
+			m_v3MinG.z = myPoints[i].z;
+		}
+		else if (m_v3MaxG.z < myPoints[i].z)
+		{
+			m_v3MaxG.z = myPoints[i].z;
+		}
+	}
+
 	//----------------------------------------
 
 	//we calculate the distance between min and max vectors

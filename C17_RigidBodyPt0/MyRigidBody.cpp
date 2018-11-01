@@ -63,6 +63,41 @@ void MyRigidBody::Release(void)
 MyRigidBody::MyRigidBody(std::vector<vector3> a_pointList)
 {
 	Init();
+	if (a_pointList.size == 0)
+	{
+		return;
+	}
+	m_v3MinL = a_pointList[0];
+	m_v3MaxL = a_pointList[0];
+	for (uint i = 1; i < a_pointList.size(); ++i)
+	{
+		if (m_v3MinL.x > a_pointList[i].x)
+		{
+			m_v3MinL.x = a_pointList[i].x;
+		}
+		else if (m_v3MaxL.x < a_pointList[i].x)
+		{
+			m_v3MaxL.x = a_pointList[i].x;
+		}
+		if (m_v3MinL.y > a_pointList[i].y)
+		{
+			m_v3MinL.y = a_pointList[i].y;
+		}
+		else if (m_v3MaxL.y < a_pointList[i].y)
+		{
+			m_v3MaxL.y = a_pointList[i].y;
+		}
+		if (m_v3MinL.z > a_pointList[i].z)
+		{								
+			m_v3MinL.z = a_pointList[i].z;
+		}
+		else if (m_v3MaxL.z < a_pointList[i].z)
+		{
+			m_v3MaxL.z = a_pointList[i].z;
+		}
+	}
+
+	m_v3Center = (m_v3MaxL - m_v3MinL) / 2;
 }
 MyRigidBody::MyRigidBody(MyRigidBody const& other)
 {
@@ -86,7 +121,7 @@ MyRigidBody::MyRigidBody(MyRigidBody const& other)
 }
 MyRigidBody& MyRigidBody::operator=(MyRigidBody const& other)
 {
-	if(this != &other)
+	if (this != &other)
 	{
 		Release();
 		Init();
@@ -102,6 +137,8 @@ void MyRigidBody::AddToRenderList(void)
 {
 	if (!m_bVisible)
 		return;
+
+	m_pMeshMngr->AddSphereToRenderList(m_m4ToWorld * glm::scale(vector3(5.0f)), m_v3Color, RENDER_SOLID);
 }
 bool MyRigidBody::IsColliding(MyRigidBody* const other)
 {
