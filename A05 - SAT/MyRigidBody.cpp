@@ -287,6 +287,25 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 	(eSATResults::SAT_NONE has a value of 0)
 	*/
 
+	float myRad = m_fRadius;
+	float otherRad = a_pOther->m_fRadius;
+	matrix3 R, AbsR;
+	vector3 t = a_pOther->m_v3Center - m_v3Center;
+
+	for (int i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			//R[i][j] = glm::dot(, a_pOther)
+			AbsR[i][j] = abs(R[i][j]) + DBL_EPSILON;
+		}
+	}
+
+	for (int i = 0; i < 3; i++)
+	{
+		myRad = m_v3HalfWidth[0] * AbsR[0][i]
+	}
+
 	//there is no axis test that separates this two objects
 	return eSATResults::SAT_NONE;
 }
