@@ -290,21 +290,109 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 	float myRad = m_fRadius;
 	float otherRad = a_pOther->m_fRadius;
 	matrix3 R, AbsR;
-	vector3 t = a_pOther->m_v3Center - m_v3Center;
 
+	std::vector<vector3> myLocalAxes;
+	glm::quat myQuat = glm::quat_cast(m_m4ToWorld);
+	myLocalAxes.push_back(myQuat * vector3(1, 0, 0));
+	myLocalAxes.push_back(myQuat * vector3(0, 1, 0));
+	myLocalAxes.push_back(myQuat * vector3(0, 0, 1));
+
+	std::vector<vector3> otherLocalAxes;
+	glm::quat otherQuat = glm::quat_cast(a_pOther->m_m4ToWorld);
+	otherLocalAxes.push_back(otherQuat * vector3(1, 0, 0));
+	otherLocalAxes.push_back(otherQuat * vector3(0, 1, 0));
+	otherLocalAxes.push_back(otherQuat * vector3(0, 0, 1));
+
+	// Compute rotation matrix expressing a_pOther in this Rigidbody's coordinate frame
 	for (int i = 0; i < 3; i++)
 	{
 		for (int j = 0; j < 3; j++)
 		{
-			//R[i][j] = glm::dot(, a_pOther)
+			R[i][j] = glm::dot(myLocalAxes[i], otherLocalAxes[j]);
+		}
+	}
+
+	// Recalculate centers to ensure accuracy;
+	/*m_v3Center = GetCenterGlobal();
+	a_pOther->m_v3Center = a_pOther->GetCenterGlobal();*/
+
+	// Calculate the translation vector
+	vector3 t = a_pOther->GetCenterGlobal() - GetCenterGlobal();
+
+	// Bring the translation into this Rigidbody's coordinate frame
+	t = vector3(glm::dot(t, myLocalAxes[0]), glm::dot(t, myLocalAxes[1]), glm::dot(t, myLocalAxes[2]));
+
+	// Compute the common subexpression. Add in an epsilon to
+	// counteract arithmetic errors when two edges are parallel
+	// and their cross product is near null
+	for (int i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
 			AbsR[i][j] = abs(R[i][j]) + DBL_EPSILON;
 		}
 	}
 
+	// Test axes L = A0, L = A1, L = A2
 	for (int i = 0; i < 3; i++)
 	{
-		myRad = m_v3HalfWidth[0] * AbsR[0][i]
+		myRad = m_v3HalfWidth[i];
+		otherRad = a_pOther->m_v3HalfWidth[0] * AbsR[i][0] + a_pOther->m_v3HalfWidth[1] * AbsR[i][1] + a_pOther->m_v3HalfWidth[2] * AbsR[i][2];
+		if (abs(t[i]) > myRad + otherRad) return 1;
 	}
+
+	// Test axes L = B0, L = B1, L = B2
+	for (int i = 0; i < 3; i++)
+	{
+		myRad = m_v3HalfWidth[0] * AbsR[0][i] + m_v3HalfWidth[1] * AbsR[1][i] + m_v3HalfWidth[2] * AbsR[2][i];
+		otherRad = a_pOther->m_v3HalfWidth[i];
+		if (abs(t[0] * R[0][i] + t[1] * R[1][i] + t[2] * R[2][i]) > myRad + otherRad) return 1;
+	}
+
+	// Test axis L = A0 x B0
+	myRad = m_v3HalfWidth[1] * AbsR[2][0] + m_v3HalfWidth[2] * AbsR[1][0];
+	otherRad = a_pOther->m_v3HalfWidth[1] * AbsR[0][2] + a_pOther->m_v3HalfWidth[2] * AbsR[0][1];
+	if (abs(t[2] * R[1][0] - t[1] * R[2][0]) > myRad + otherRad) return 1;
+
+	// Test axis L = A0 x B1
+	myRad = m_v3HalfWidth[1] * AbsR[2][1] + m_v3HalfWidth[2] * AbsR[1][1];
+	otherRad = a_pOther->m_v3HalfWidth[0] * AbsR[0][2] + a_pOther->m_v3HalfWidth[2] * AbsR[0][0];
+	if (abs(t[2] * R[1][1] - t[1] * R[2][1]) > myRad + otherRad) return 1;
+
+	// Test axis L = A0 x B2
+	myRad = m_v3HalfWidth[1] * AbsR[2][2] + m_v3HalfWidth[2] * AbsR[1][2];
+	otherRad = a_pOther->m_v3HalfWidth[0] * AbsR[0][1] + a_pOther->m_v3HalfWidth[1] * AbsR[0][0];
+	if (abs(t[2] * R[1][2] - t[1] * R[2][2]) > myRad + otherRad) return 1;
+
+	// Test axis L = A1 x B0
+	myRad = m_v3HalfWidth[0] * AbsR[2][0] + m_v3HalfWidth[2] * AbsR[0][0];
+	otherRad = a_pOther->m_v3HalfWidth[1] * AbsR[1][2] + a_pOther->m_v3HalfWidth[2] * AbsR[1][1];
+	if (abs(t[0] * R[2][0] - t[2] * R[0][0]) > myRad + otherRad) return 1;
+
+	// Test axis L = A1 x B1
+	myRad = m_v3HalfWidth[0] * AbsR[2][1] + m_v3HalfWidth[2] * AbsR[0][1];
+	otherRad = a_pOther->m_v3HalfWidth[0] * AbsR[1][2] + a_pOther->m_v3HalfWidth[2] * AbsR[1][0];
+	if (abs(t[0] * R[2][1] - t[2] * R[0][1]) > myRad + otherRad) return 1;
+
+	// Test axis L = A1 x B2
+	myRad = m_v3HalfWidth[0] * AbsR[2][2] + m_v3HalfWidth[2] * AbsR[0][2];
+	otherRad = a_pOther->m_v3HalfWidth[0] * AbsR[1][1] + a_pOther->m_v3HalfWidth[1] * AbsR[1][0];
+	if (abs(t[0] * R[2][2] - t[2] * R[0][2]) > myRad + otherRad) return 1;
+
+	// Test axis L = A2 x B0
+	myRad = m_v3HalfWidth[0] * AbsR[1][0] + m_v3HalfWidth[1] * AbsR[0][0];
+	otherRad = a_pOther->m_v3HalfWidth[1] * AbsR[2][2] + a_pOther->m_v3HalfWidth[2] * AbsR[2][1];
+	if (abs(t[1] * R[0][0] - t[0] * R[1][0]) > myRad + otherRad) return 1;
+
+	// Test axis L = A2 x B1
+	myRad = m_v3HalfWidth[0] * AbsR[1][1] + m_v3HalfWidth[1] * AbsR[0][1];
+	otherRad = a_pOther->m_v3HalfWidth[0] * AbsR[2][2] + a_pOther->m_v3HalfWidth[2] * AbsR[2][0];
+	if (abs(t[1] * R[0][1] - t[0] * R[1][1]) > myRad + otherRad) return 1;
+
+	// Test axis L = A2 x B2
+	myRad = m_v3HalfWidth[0] * AbsR[1][2] + m_v3HalfWidth[1] * AbsR[0][2];
+	otherRad = a_pOther->m_v3HalfWidth[0] * AbsR[2][1] + a_pOther->m_v3HalfWidth[1] * AbsR[2][0];
+	if (abs(t[1] * R[0][2] - t[0] * R[1][2]) > myRad + otherRad) return 1;
 
 	//there is no axis test that separates this two objects
 	return eSATResults::SAT_NONE;
