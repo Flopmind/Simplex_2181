@@ -25,7 +25,7 @@ std::vector<MyEntity*> Simplex::MyEntityManager::GetEntityList(void)
 }
 MyEntityManager* MyEntityManager::GetInstance()
 {
-	if(m_pInstance == nullptr)
+	if (m_pInstance == nullptr)
 	{
 		m_pInstance = new MyEntityManager();
 	}
@@ -33,7 +33,7 @@ MyEntityManager* MyEntityManager::GetInstance()
 }
 void MyEntityManager::ReleaseInstance()
 {
-	if(m_pInstance != nullptr)
+	if (m_pInstance != nullptr)
 	{
 		delete m_pInstance;
 		m_pInstance = nullptr;
@@ -160,15 +160,15 @@ void Simplex::MyEntityManager::SetModelMatrix(matrix4 a_m4ToWorld, uint a_uIndex
 
 	// if out of bounds
 	if (a_uIndex >= m_uEntityCount)
-		a_uIndex = m_uEntityCount -1;
+		a_uIndex = m_uEntityCount - 1;
 
 	m_EntityList[a_uIndex]->SetModelMatrix(a_m4ToWorld);
 }
 //The big 3
-MyEntityManager::MyEntityManager(){Init();}
-MyEntityManager::MyEntityManager(MyEntityManager const& a_pOther){ }
+MyEntityManager::MyEntityManager() { Init(); }
+MyEntityManager::MyEntityManager(MyEntityManager const& a_pOther) { }
 MyEntityManager& MyEntityManager::operator=(MyEntityManager const& a_pOther) { return *this; }
-MyEntityManager::~MyEntityManager(){Release();};
+MyEntityManager::~MyEntityManager() { Release(); };
 // other methods
 void Simplex::MyEntityManager::Update(void)
 {
@@ -220,7 +220,7 @@ void Simplex::MyEntityManager::RemoveEntity(uint a_uIndex)
 	{
 		std::swap(m_EntityList[a_uIndex], m_EntityList[m_uEntityCount - 1]);
 	}
-	
+
 	//and then pop the last one
 	MyEntity* pTemp = m_EntityList[m_uEntityCount - 1];
 	SafeDelete(pTemp);
@@ -355,13 +355,6 @@ void Simplex::MyEntityManager::ClearDimensionSet(String a_sUniqueID)
 		pTemp->ClearDimensionSet();
 	}
 }
-void Simplex::MyEntityManager::ClearDimensionSetAll(void)
-{
-	for (uint i = 0; i < m_EntityList.size(); i++)
-	{
-		m_EntityList[i]->ClearDimensionSet();
-	}
-}
 bool Simplex::MyEntityManager::IsInDimension(uint a_uIndex, uint a_uDimension)
 {
 	//if the list is empty return
@@ -407,4 +400,15 @@ bool Simplex::MyEntityManager::SharesDimension(String a_sUniqueID, MyEntity* con
 		return pTemp->SharesDimension(a_pOther);
 	}
 	return false;
+}
+void Simplex::MyEntityManager::ClearDimensionSetAll(void)
+{
+	for (uint i = 0; i < m_uEntityCount; ++i)
+	{
+		ClearDimensionSet(i);
+	}
+}
+uint Simplex::MyEntityManager::GetEntityCount(void)
+{
+	return m_uEntityCount;
 }
